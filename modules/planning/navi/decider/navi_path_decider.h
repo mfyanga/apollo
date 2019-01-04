@@ -71,6 +71,8 @@ class NaviPathDecider : public NaviTask {
       Frame *frame, ReferenceLineInfo *reference_line_info) override;
 
  private:
+  void CheckConfig(const PlanningConfig &config);
+
   /**
    * @brief generate path information for trajectory plan in navigation mode.
    * @param reference_line  the reference line.
@@ -105,6 +107,18 @@ class NaviPathDecider : public NaviTask {
                       std::vector<common::PathPoint> *const path_points);
 
   /**
+   * @brief if adc is not on the dest lane, move to dest lane following quintic
+   * curve.
+   * @param the y of adc project point to dest lane reference line.
+   * @param reference_line the target lane reference line.
+   * @param path points input/output, input intercepted path points from the
+   * reference line, output the path points that merged curve path points.
+   */
+  void MoveToDestLane(const double dest_ref_line_y,
+                      const ReferenceLine &reference_line,
+                      std::vector<common::PathPoint> *const path_points);
+
+  /**
    * @brief if adc is on the dest lane, keep lane.
    * @param the y of adc project point to dest lane reference line.
    * @param path point intercepted from the reference line
@@ -113,15 +127,6 @@ class NaviPathDecider : public NaviTask {
                 std::vector<common::PathPoint> *const path_points);
 
   void RecordDebugInfo(const PathData &path_data);
-
-  /**
-   * @brief check whether it is safe to change lanes
-   * @param reference_line input change lane reference line
-   * @param path_decision input all abstacles info
-   * @return true if safe to change lane or return false.
-   */
-  bool IsSafeChangeLane(const ReferenceLine &reference_line,
-                        const PathDecision &path_decision);
 
   /**
    * @brief calculate the lateral target position with slight avoidance
@@ -142,13 +147,34 @@ class NaviPathDecider : public NaviTask {
    */
   double CalculateDistanceToDestLane();
 
+  /**
+   * @brief calculate frenet frame point by path point and reference line
+   * @param reference_line input reference line
+   * @param path_point input soure PathPoint
+   * @param frenet_frame_point output the FrenetFramePoint result
+   * @return if success return true, else return false
+   */
+  bool CalculateFrenetPoint(const ReferenceLine &reference_line,
+                            const common::PathPoint &path_point,
+                            common::FrenetFramePoint *const frenet_frame_point);
+
+  /**
+   * @brief calculate discreted path points
+   * @param reference_line input reference line
+   * @param frenet_path_points input the planning path in the FrenetFramePoint
+   * format
+   * @param path_points output the planning path in the discreted path point
+   * format
+   * @return if success return true, else return false
+   */
+  bool CovertFrenetPathToDiscretedPath(
+      const ReferenceLine &reference_line,
+      const std::vector<common::FrenetFramePoint> &frenet_path_points,
+      std::vector<common::PathPoint> *const path_points);
+
+  bool IsLaneTooBend(const ReferenceLine &reference_line);
+
  private:
-  double max_keep_lane_distance_ = 0.0;
-  double min_keep_lane_offset_ = 0.0;
-  double max_keep_lane_shift_y_ = 0.0;
-  double keep_lane_shift_compensation_ = 0.0;
-  double move_dest_lane_compensation_ = 0.0;
-  uint32_t start_plan_point_from_ = 0;
   std::map<double, double> move_dest_lane_config_talbe_;
   std::vector<double> max_speed_levels_;
 

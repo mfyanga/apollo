@@ -2,24 +2,38 @@ planner_type : NAVI
 planner_navi_config {
   task : NAVI_PATH_DECIDER
   task : NAVI_SPEED_DECIDER
-  navi_path_decider_config {
-    min_path_length: 5
-    min_look_forward_time: 2
-    max_keep_lane_distance: 0.4
-    max_keep_lane_shift_y: 0.15
-    min_keep_lane_offset: 0.20
-    keep_lane_shift_compensation: 0.01
-    move_dest_lane_config_talbe {
-      lateral_shift {
-        max_speed: 34
-        max_move_dest_lane_shift_y: 0.45
-      }
+    navi_path_decider_config {
+        min_path_length: 5
+        min_look_forward_time: 2
+        max_keep_lane_distance: 0.80
+        max_keep_lane_shift_y: 0.10
+        min_keep_lane_offset: 0.20
+        keep_lane_shift_compensation: 0.01
+        move_dest_lane_config_talbe {
+            lateral_shift {
+                max_speed: 34
+                max_move_dest_lane_shift_y: 0.45
+            }
+        }
+        move_dest_lane_compensation: 0.35
+        max_kappa_threshold: 0.0001
+        move_dest_lane_compensation_by_kappa: 0.14
+        enable_plan_start_point: false
+        basic_path_lateral_compensation: 0.08
+        max_nudge_distance: 0.10
+        nudge_compensation: 0.01
+        enable_quintic_polynomial_curve_path: false
+        move_dest_lane_longitudinal_coef: 3.73
+        move_dest_lane_velocity_coef: 0.1
+        move_dest_lane_kappa_coef: 20.0
+        move_dest_lane_longitudinal_buffer: 0.8
+        dense_sample_resolution: 0.50
+        sparse_sample_resolution: 2.0
+        move_curve_dl_velocity_coef: 0.0
+        move_to_left_curve_start_dl: 0.008
+        move_to_right_curve_start_dl: -0.015
+        min_large_curvature: 0.03
     }
-    move_dest_lane_compensation: 0.35
-    max_kappa_threshold: 0.0
-    kappa_move_dest_lane_compensation: 0.0
-    start_plan_point_from: 0
-  }
 
   navi_speed_decider_config {
     preferred_accel: 1.5

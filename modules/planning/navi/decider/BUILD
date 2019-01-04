@@ -45,6 +45,7 @@ cc_library(
         "//modules/planning/proto:planning_config_proto",
         "//modules/planning/proto:planning_proto",
         "//modules/planning/toolkits/optimizers:task",
+	"//modules/planning/math/curve1d:quintic_polynomial_curve1d",
     ],
 )
 
